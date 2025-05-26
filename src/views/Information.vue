@@ -12,7 +12,7 @@
                 <h3>{{ item.title }}</h3>
                 <p>{{ item.content }}</p>
                 <div class="article-meta">
-                  <span class="article-tag">{{ item.tag }}</span>
+                  <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
                   <span class="article-time">{{ item.time }}</span>
                 </div>
               </div>
@@ -38,7 +38,7 @@
                 <h3>{{ item.title }}</h3>
                 <p>{{ item.content }}</p>
                 <div class="article-meta">
-                  <span class="article-tag">{{ item.tag }}</span>
+                  <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
                   <span class="article-time">{{ item.time }}</span>
                 </div>
               </div>
@@ -64,7 +64,7 @@
                 <h3>{{ item.title }}</h3>
                 <p>{{ item.content }}</p>
                 <div class="article-meta">
-                  <span class="article-tag">{{ item.tag }}</span>
+                  <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
                   <span class="article-time">{{ item.time }}</span>
                 </div>
               </div>
@@ -82,7 +82,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { NTabs, NTabPane, NSpin } from 'naive-ui'
+import { NTabs, NTabPane, NSpin, NTag } from 'naive-ui'
 
 // 載入狀態
 const loading = ref({
@@ -198,7 +198,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-
 .content-container {
   border-radius: 8px;
 }
@@ -213,12 +212,11 @@ onMounted(async () => {
   display: flex;
   gap: 20px;
   padding: 20px;
-  border-bottom: 1px solid #eee;
   transition: all 0.3s ease;
 }
 
 .article-item:hover {
-  background: #f8f9fa;
+  cursor: pointer;
 }
 
 .article-image {
@@ -242,13 +240,11 @@ onMounted(async () => {
 
 .article-content h3 {
   margin: 0 0 10px 0;
-  color: #2c3e50;
   font-size: 18px;
 }
 
 .article-content p {
   margin: 0 0 10px 0;
-  color: #666;
   line-height: 1.6;
   flex: 1;
 }
@@ -261,14 +257,8 @@ onMounted(async () => {
 }
 
 .article-tag {
-  background: #e8f4ff;
-  color: #1890ff;
   padding: 2px 8px;
   border-radius: 4px;
-}
-
-.article-time {
-  color: #999;
 }
 
 .loading-more {
@@ -276,7 +266,6 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  color: #666;
   gap: 8px;
 }
 </style>
