@@ -123,7 +123,7 @@ const fetchData = async (type, pageNum) => {
             (index % 4) + 1
           }.jpeg`,
           tag: '示例標籤',
-          time: '2024-03-21 10:00'
+          time: '2024-03-21'
         }))
       resolve(newItems)
     }, 500)
@@ -141,13 +141,13 @@ const handlePageChange = async type => {
   const newItems = await fetchData(type, page.value[type])
   list.value = newItems
 
-  // 滾動到頂部
-  setTimeout(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'instant'
+  // 使用 contentContainer 滾動到頂部
+  if (contentContainer.value) {
+    contentContainer.value.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
     })
-  }, 100)
+  }
 }
 
 // 初始化數據
@@ -215,15 +215,16 @@ onMounted(async () => {
 }
 
 .article-content p {
-  line-height: 1.6;
+  line-height: 1.4;
   flex: 1;
+  margin: 4px 0;
 }
 
 .article-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .article-tag {
@@ -235,6 +236,12 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   padding: 20px 0;
+}
+
+:deep(.n-tag) {
+  font-size: 12px;
+  padding: 0 6px;
+  height: 20px;
 }
 
 @media (min-width: 481px) {
@@ -272,12 +279,6 @@ onMounted(async () => {
 
   .article-meta {
     font-size: 12px;
-  }
-
-  :deep(.n-tag) {
-    font-size: 12px;
-    padding: 0 6px;
-    height: 20px;
   }
 }
 
