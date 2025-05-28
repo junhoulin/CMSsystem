@@ -64,7 +64,16 @@
 </template>
 
 <script setup>
-import { NLayoutHeader, NSpace, NButton, NIcon, NDropdown, NAvatar, NBadge } from 'naive-ui'
+import {
+  NLayoutHeader,
+  NSpace,
+  NButton,
+  NIcon,
+  NDropdown,
+  NAvatar,
+  NBadge,
+  useMessage
+} from 'naive-ui'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
 import {
   Sunny,
@@ -88,6 +97,8 @@ const notificationCount = ref(1)
 
 // 使用 useWindowSize 監測視窗大小
 const { width } = useWindowSize()
+
+const message = useMessage()
 
 // 根據視窗寬度計算間距
 const spaceSize = computed(() => {
@@ -137,7 +148,7 @@ const handleUserSelect = key => {
 
 const logout = () => {
   localStorage.removeItem('token')
-  router.push('/login')
+  message.success('已成功登出')
 }
 
 const handleNotificationClick = () => {
