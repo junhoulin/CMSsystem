@@ -4,7 +4,12 @@
       <n-tabs type="line" animated>
         <n-tab-pane name="news" tab="最新消息">
           <div class="article-list">
-            <div class="article-item" v-for="(item, index) in newsList" :key="index">
+            <div
+              class="article-item"
+              v-for="(item, index) in newsList"
+              :key="index"
+              @click="goToArticleDetail('news', index)"
+            >
               <div class="article-image">
                 <img :src="item.image" :alt="item.title" />
               </div>
@@ -30,7 +35,12 @@
 
         <n-tab-pane name="digital-world" tab="數智天地">
           <div class="article-list">
-            <div class="article-item" v-for="(item, index) in digitalWorldList" :key="index">
+            <div
+              class="article-item"
+              v-for="(item, index) in digitalWorldList"
+              :key="index"
+              @click="goToArticleDetail('digital-world', index)"
+            >
               <div class="article-image">
                 <img :src="item.image" :alt="item.title" />
               </div>
@@ -56,7 +66,12 @@
 
         <n-tab-pane name="digital-articles" tab="數智文章">
           <div class="article-list">
-            <div class="article-item" v-for="(item, index) in digitalArticlesList" :key="index">
+            <div
+              class="article-item"
+              v-for="(item, index) in digitalArticlesList"
+              :key="index"
+              @click="goToArticleDetail('digital-articles', index)"
+            >
               <div class="article-image">
                 <img :src="item.image" :alt="item.title" />
               </div>
@@ -87,6 +102,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { NTabs, NTabPane, NTag, NPagination } from 'naive-ui'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const contentContainer = ref(null)
 
@@ -148,6 +166,12 @@ const handlePageChange = async type => {
       block: 'start'
     })
   }
+}
+
+// 跳轉到文章詳情頁
+const goToArticleDetail = (type, index) => {
+  const id = page.value[type] * 12 + index + 1
+  router.push(`/Information/article/${id}`)
 }
 
 // 初始化數據
