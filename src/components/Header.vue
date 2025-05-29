@@ -15,8 +15,14 @@
       <!-- 右側功能按鈕 -->
       <div class="header-right">
         <n-space align="center" :size="spaceSize">
-          <!-- 主題按鈕 -->
-          <n-button round quaternary :focusable="false" @click="themeStore.toggleTheme">
+          <!-- 主題按鈕 - 只在非手機版顯示 -->
+          <n-button
+            v-if="width > 480"
+            round
+            quaternary
+            :focusable="false"
+            @click="themeStore.toggleTheme"
+          >
             <template #icon>
               <n-icon size="20">
                 <Sunny v-if="themeStore.theme === null" />
@@ -24,8 +30,14 @@
               </n-icon>
             </template>
           </n-button>
-          <!-- 通知按鈕 -->
-          <n-badge :value="notificationCount" :max="99" :show-zero="false" :offset="[-4, 1]">
+          <!-- 通知按鈕 - 只在非手機版顯示 -->
+          <n-badge
+            v-if="width > 480"
+            :value="notificationCount"
+            :max="99"
+            :show-zero="false"
+            :offset="[-4, 1]"
+          >
             <n-button round quaternary :focusable="false" @click="handleNotificationClick">
               <template #icon>
                 <n-icon size="20">
@@ -105,27 +117,52 @@ const spaceSize = computed(() => {
   return width.value <= 480 ? 2 : 12
 })
 
-const userOptions = [
-  {
-    label: '個人資料',
-    key: 'profile',
-    icon: renderIcon(PersonCircle)
-  },
-  {
-    label: '設定',
-    key: 'settings',
-    icon: renderIcon(Settings)
-  },
-  {
-    type: 'divider',
-    key: 'd1'
-  },
-  {
-    label: '登出',
-    key: 'logout',
-    icon: renderIcon(LogOut)
+// 根據螢幕寬度生成選單選項
+const userOptions = computed(() => {
+  const baseOptions = [
+    {
+      label: '個人資料',
+      key: 'profile',
+      icon: renderIcon(PersonCircle)
+    },
+    {
+      label: '設定',
+      key: 'settings',
+      icon: renderIcon(Settings)
+    }
+  ]
+
+  // 在手機版添加主題切換和通知選項
+  if (width.value <= 480) {
+    baseOptions.unshift(
+      {
+        label: themeStore.theme === null ? '深色模式' : '淺色模式',
+        key: 'theme',
+        icon: renderIcon(themeStore.theme === null ? Moon : Sunny)
+      },
+      {
+        label: '通知',
+        key: 'notifications',
+        icon: renderIcon(Notifications),
+        badge: notificationCount.value
+      }
+    )
   }
-]
+
+  baseOptions.push(
+    {
+      type: 'divider',
+      key: 'd1'
+    },
+    {
+      label: '登出',
+      key: 'logout',
+      icon: renderIcon(LogOut)
+    }
+  )
+
+  return baseOptions
+})
 
 // 渲染圖標的函數
 function renderIcon(icon) {
@@ -139,6 +176,12 @@ const handleUserSelect = key => {
       break
     case 'settings':
       router.push('/settings')
+      break
+    case 'theme':
+      themeStore.toggleTheme()
+      break
+    case 'notifications':
+      handleNotificationClick()
       break
     case 'logout':
       logout()
@@ -238,5 +281,24 @@ const handleNotificationClick = () => {
   padding: 2 4px;
   font-size: 10px;
   line-height: 16px;
+}
+
+// 新增手機版面的樣式
+@media (max-width: 480px) {
+  .user-info {
+    .user-text {
+      display: none;
+    }
+  }
+
+  :deep(.n-dropdown-menu) {
+    .n-dropdown-option {
+      .n-dropdown-option-body {
+        .n-dropdown-option-body__icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
 }
 </style>
