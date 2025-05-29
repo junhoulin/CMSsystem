@@ -172,10 +172,8 @@ function renderIcon(icon) {
 const handleUserSelect = key => {
   switch (key) {
     case 'profile':
-      router.push('/profile')
       break
     case 'settings':
-      router.push('/settings')
       break
     case 'theme':
       themeStore.toggleTheme()

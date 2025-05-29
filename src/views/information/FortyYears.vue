@@ -1,6 +1,7 @@
 <template>
   <div class="information">
     <div class="content-container" ref="contentContainer">
+      <h2 class="section-title">40周年</h2>
       <n-tabs type="line" animated>
         <n-tab-pane name="news" tab="最新消息">
           <div class="article-list">
@@ -109,8 +110,8 @@
                   <n-skeleton text />
                   <n-skeleton text :repeat="2" />
                   <div class="article-meta">
-                    <n-skeleton text  />
-                    <n-skeleton text  />
+                    <n-skeleton text />
+                    <n-skeleton text />
                   </div>
                 </div>
               </div>
@@ -255,11 +256,20 @@ onMounted(async () => {
   border-radius: 8px;
 }
 
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .article-list {
   min-height: 400px;
-  padding: 20px 0;
+  padding: 6px 0;
   display: grid;
-  gap: 20px;
+  gap: 10px;
 }
 
 .article-item {

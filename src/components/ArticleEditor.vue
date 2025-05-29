@@ -113,17 +113,14 @@ onBeforeUnmount(() => {
 <style scoped>
 .editor-container {
   width: 100%;
-  height: 280px;
-  margin-bottom: 20px;
+  height: 100%;
 }
 
 #editor {
   height: 100%;
-  overflow: hidden; /* 防止編輯器容器溢出 */
 }
 
 :deep(.ql-container) {
-  height: 350px; /* 設置容器高度 */
-  overflow: hidden; /* 防止容器溢出 */
+  height: calc(100% - 42px);
 }
 </style>

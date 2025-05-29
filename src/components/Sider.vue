@@ -64,8 +64,33 @@ const menuOptions = [
   {
     label: '資訊入口',
     key: '/Information',
-    path: '/Information',
-    icon: renderIcon(Newspaper)
+    icon: renderIcon(Newspaper),
+    children: [
+      {
+        label: '所有公告',
+        key: '/Information/AllAnnouncements',
+        path: '/Information/AllAnnouncements',
+        icon: renderIcon(DocumentText)
+      },
+      {
+        label: '策略營地',
+        key: '/Information/StrategyCamp',
+        path: '/Information/StrategyCamp',
+        icon: renderIcon(DocumentText)
+      },
+      {
+        label: '40周年',
+        key: '/Information/FortyYears',
+        path: '/Information/FortyYears',
+        icon: renderIcon(DocumentText)
+      },
+      {
+        label: '資安管理',
+        key: '/Information/SecurityManagement',
+        path: '/Information/SecurityManagement',
+        icon: renderIcon(DocumentText)
+      }
+    ]
   },
   {
     label: '功能應用',

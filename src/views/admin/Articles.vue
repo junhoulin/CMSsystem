@@ -22,7 +22,10 @@
     <n-modal
       v-model:show="showModal"
       preset="card"
-      style="width: 90vw; height: 90vh"
+      :style="{
+        width: '90vw',
+        height: isMobile ? '1050px' : '860px'
+      }"
       title="新增文章"
       :bordered="false"
       size="huge"
@@ -38,11 +41,50 @@
         <n-form-item label="標題" path="title">
           <n-input v-model:value="formValue.title" placeholder="請輸入文章標題" />
         </n-form-item>
+        <n-form-item label="分類" path="channel">
+          <n-space>
+            <n-select
+              v-model:value="formValue.channel"
+              :options="channelOptions"
+              placeholder="請選擇頻道"
+              @update:value="handleChannelChange"
+              style="width: 200px"
+            />
+            <n-select
+              v-model:value="formValue.category"
+              :options="categoryOptions"
+              placeholder="請選擇分類"
+              :disabled="!formValue.channel"
+              @update:value="handleCategoryChange"
+              style="width: 200px"
+            />
+            <n-select
+              v-model:value="formValue.subcategory"
+              :options="subcategoryOptions"
+              placeholder="請選擇子分類"
+              :disabled="!formValue.category"
+              style="width: 200px"
+            />
+          </n-space>
+        </n-form-item>
+        <n-form-item label="發布時間" path="publishTime">
+          <n-date-picker
+            v-model:value="formValue.publishTime"
+            type="date"
+            clearable
+            placeholder="請選擇發布日期"
+            style="width: 200px"
+            :default-value="Date.now()"
+            @update:value="handleDateChange"
+          />
+        </n-form-item>
         <n-form-item label="發布狀態" path="isPublished">
           <n-switch v-model:value="formValue.isPublished" />
         </n-form-item>
       </n-form>
-      <article-editor />
+      <div style="height: 400px">
+        <article-editor />
+      </div>
       <template #footer>
         <n-space justify="end">
           <n-button @click="showModal = false">取消</n-button>
@@ -54,7 +96,8 @@
 </template>
 
 <script setup>
-import { h, ref } from 'vue'
+import { h, ref, computed } from 'vue'
+import { useWindowSize } from '@vueuse/core'
 import {
   NCard,
   NButton,
@@ -66,7 +109,10 @@ import {
   NForm,
   NFormItem,
   NInput,
-  NSwitch
+  NSwitch,
+  NSelect,
+  NDatePicker,
+  NTag
 } from 'naive-ui'
 import { Add, Create, Trash } from '@vicons/ionicons5'
 import ArticleEditor from '@/components/ArticleEditor.vue'
@@ -74,9 +120,83 @@ import ArticleEditor from '@/components/ArticleEditor.vue'
 // 控制 Modal 顯示
 const showModal = ref(false)
 
+// 分類數據結構
+const categoryData = {
+  'strategy-analysis': {
+    label: '策略解析',
+    categories: [
+      {
+        label: '數位轉型',
+        value: 'digital-transformation',
+        subcategories: [
+          { label: '轉型策略', value: 'transformation-strategy' },
+          { label: '轉型案例', value: 'transformation-case' },
+          { label: '轉型工具', value: 'transformation-tools' }
+        ]
+      },
+      {
+        label: '創新策略',
+        value: 'innovation-strategy',
+        subcategories: [
+          { label: '創新方法', value: 'innovation-methods' },
+          { label: '創新案例', value: 'innovation-case' },
+          { label: '創新工具', value: 'innovation-tools' }
+        ]
+      },
+      {
+        label: '市場分析',
+        value: 'market-analysis',
+        subcategories: [
+          { label: '市場趨勢', value: 'market-trends' },
+          { label: '競爭分析', value: 'competition-analysis' },
+          { label: '用戶洞察', value: 'user-insights' }
+        ]
+      }
+    ]
+  },
+  'digital-native': {
+    label: '數智原生',
+    categories: [
+      {
+        label: '數位原生企業',
+        value: 'digital-native-enterprise',
+        subcategories: [
+          { label: '企業案例', value: 'enterprise-case' },
+          { label: '企業策略', value: 'enterprise-strategy' },
+          { label: '企業工具', value: 'enterprise-tools' }
+        ]
+      },
+      {
+        label: '數位原生產品',
+        value: 'digital-native-product',
+        subcategories: [
+          { label: '產品案例', value: 'product-case' },
+          { label: '產品策略', value: 'product-strategy' },
+          { label: '產品工具', value: 'product-tools' }
+        ]
+      }
+    ]
+  }
+}
+
+// 頻道選項
+const channelOptions = [
+  { label: '策略解析', value: 'strategy-analysis' },
+  { label: '數智原生', value: 'digital-native' },
+  { label: '數智場景', value: 'digital-scenario' },
+  { label: '成功典範', value: 'success-story' },
+  { label: '最牛評比', value: 'best-rating' },
+  { label: '策略勳章', value: 'strategy-badge' },
+  { label: '行業案例', value: 'industry-case' }
+]
+
 // 表單數據
 const formValue = ref({
   title: '',
+  channel: null,
+  category: null,
+  subcategory: null,
+  publishTime: Date.now(),
   isPublished: false
 })
 
@@ -86,7 +206,61 @@ const rules = {
     required: true,
     message: '請輸入文章標題',
     trigger: ['blur', 'input']
+  },
+  channel: {
+    required: true,
+    message: '請選擇頻道',
+    trigger: ['blur', 'change']
+  },
+  category: {
+    required: true,
+    message: '請選擇分類',
+    trigger: ['blur', 'change']
+  },
+  subcategory: {
+    required: true,
+    message: '請選擇子分類',
+    trigger: ['blur', 'change']
+  },
+  publishTime: {
+    required: true,
+    message: '請選擇發布日期',
+    trigger: ['blur', 'change'],
+    validator: (rule, value) => {
+      return value !== null && value !== undefined
+    }
   }
+}
+
+// 計算屬性：當前選擇的頻道對應的分類選項
+const categoryOptions = computed(() => {
+  if (!formValue.value.channel) return []
+  return categoryData[formValue.value.channel]?.categories || []
+})
+
+// 計算屬性：當前選擇的分類對應的子分類選項
+const subcategoryOptions = computed(() => {
+  if (!formValue.value.channel || !formValue.value.category) return []
+  const category = categoryData[formValue.value.channel]?.categories.find(
+    c => c.value === formValue.value.category
+  )
+  return category?.subcategories || []
+})
+
+// 處理頻道變化
+const handleChannelChange = () => {
+  formValue.value.category = null
+  formValue.value.subcategory = null
+}
+
+// 處理分類變化
+const handleCategoryChange = () => {
+  formValue.value.subcategory = null
+}
+
+// 處理日期變化
+const handleDateChange = value => {
+  formValue.value.publishTime = value
 }
 
 // 表格列定義
@@ -96,16 +270,58 @@ const columns = [
     key: 'title'
   },
   {
-    title: '作者',
-    key: 'author'
+    title: '頻道',
+    key: 'channel',
+    render(row) {
+      const channel = channelOptions.find(c => c.value === row.channel)
+      return channel ? channel.label : '-'
+    }
+  },
+  {
+    title: '分類',
+    key: 'category',
+    render(row) {
+      if (!row.channel || !row.category) return '-'
+      const channelData = categoryData[row.channel]
+      if (!channelData) return '-'
+      const category = channelData.categories.find(c => c.value === row.category)
+      return category ? category.label : '-'
+    }
+  },
+  {
+    title: '子分類',
+    key: 'subcategory',
+    render(row) {
+      if (!row.channel || !row.category || !row.subcategory) return '-'
+      const channelData = categoryData[row.channel]
+      if (!channelData) return '-'
+      const category = channelData.categories.find(c => c.value === row.category)
+      if (!category) return '-'
+      const subcategory = category.subcategories.find(s => s.value === row.subcategory)
+      return subcategory ? subcategory.label : '-'
+    }
   },
   {
     title: '發布時間',
-    key: 'publishTime'
+    key: 'publishTime',
+    render(row) {
+      return row.publishTime ? new Date(row.publishTime).toLocaleDateString() : '-'
+    }
   },
   {
     title: '狀態',
-    key: 'status'
+    key: 'status',
+    render(row) {
+      return h(
+        NTag,
+        {
+          type: row.isPublished ? 'success' : 'warning'
+        },
+        {
+          default: () => (row.isPublished ? '已發布' : '未發布')
+        }
+      )
+    }
   },
   {
     title: '操作',
@@ -160,52 +376,30 @@ const columns = [
 const tableData = ref([
   {
     id: 1,
-    title: '示例文章1',
-    author: '管理員',
-    publishTime: '2024-03-26 10:00:00',
-    status: '已發布'
+    title: '示例文章示例文章示例文章示例文章示例文章示例文章示例文章示例文章示例文章示例文章',
+    channel: 'strategy-analysis',
+    category: 'digital-transformation',
+    subcategory: 'transformation-strategy',
+    publishTime: Date.now(),
+    isPublished: true
   },
   {
     id: 2,
-    title: '示例文章2',
-    author: '管理員',
-    publishTime: '2024-03-26 11:00:00',
-    status: '草稿'
+    title: '示例文章scasccsacascasc2',
+    channel: 'digital-native',
+    category: 'digital-native-enterprise',
+    subcategory: 'enterprise-case',
+    publishTime: Date.now() - 86400000, // 前一天
+    isPublished: false
   },
   {
     id: 3,
     title: '示例文章3',
-    author: '管理員',
-    publishTime: '2024-03-26 12:00:00',
-    status: '已發布'
-  },
-  {
-    id: 4,
-    title: '示例文章4',
-    author: '管理員',
-    publishTime: '2024-03-26 13:00:00',
-    status: '草稿'
-  },
-  {
-    id: 5,
-    title: '示例文章5',
-    author: '管理員',
-    publishTime: '2024-03-26 14:00:00',
-    status: '已發布'
-  },
-  {
-    id: 6,
-    title: '示例文章6',
-    author: '管理員',
-    publishTime: '2024-03-26 15:00:00',
-    status: '草稿'
-  },
-  {
-    id: 7,
-    title: '示例文章7',
-    author: '管理員',
-    publishTime: '2024-03-26 16:00:00',
-    status: '已發布'
+    channel: 'strategy-analysis',
+    category: 'innovation-strategy',
+    subcategory: 'innovation-methods',
+    publishTime: Date.now() - 172800000, // 前兩天
+    isPublished: true
   }
 ])
 
@@ -219,6 +413,10 @@ const handleAdd = () => {
   // 重置表單
   formValue.value = {
     title: '',
+    channel: null,
+    category: null,
+    subcategory: null,
+    publishTime: Date.now(),
     isPublished: false
   }
   showModal.value = true
@@ -231,6 +429,10 @@ const handleSave = () => {
   // 組合所有文章數據
   const articleData = {
     title: formValue.value.title,
+    channel: formValue.value.channel,
+    category: formValue.value.category,
+    subcategory: formValue.value.subcategory,
+    publishTime: new Date(formValue.value.publishTime).toLocaleDateString(),
     isPublished: formValue.value.isPublished,
     content: content
   }
@@ -248,12 +450,16 @@ const handleEdit = row => {
 const handleDelete = row => {
   console.log('刪除文章', row)
 }
+
+// 使用 useWindowSize 監聽視窗大小
+const { width } = useWindowSize()
+const isMobile = computed(() => width.value <= 768)
 </script>
 
 <style lang="scss" scoped>
 .articles-container {
   .mb-4 {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 }
 </style>

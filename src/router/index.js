@@ -15,13 +15,28 @@ const router = createRouter({
           component: () => import('../views/Home.vue')
         },
         {
-          path: 'Information',
-          name: 'Information',
-          component: () => import('../views/information/Information.vue')
+          path: 'Information/AllAnnouncements',
+          name: 'AllAnnouncements',
+          component: () => import('../views/information/AllAnnouncements.vue')
+        },
+        {
+          path: 'Information/StrategyCamp',
+          name: 'StrategyCamp',
+          component: () => import('../views/information/StrategyCamp.vue')
+        },
+        {
+          path: 'Information/FortyYears',
+          name: 'FortyYears',
+          component: () => import('../views/information/FortyYears.vue')
+        },
+        {
+          path: 'Information/SecurityManagement',
+          name: 'SecurityManagement',
+          component: () => import('../views/information/SecurityManagement.vue')
         },
         {
           path: 'Information/article/:id',
-          name: 'ArticleDetail',
+          name: 'article-detail',
           component: () => import('../views/information/ArticleDetail.vue')
         },
         {
@@ -42,22 +57,12 @@ const router = createRouter({
         {
           path: 'admin/apps',
           name: 'admin-apps',
-          component: () => import('../views/admin/AppManagement.vue'),
-          meta: {
-            title: '應用程式管理',
-            requiresAuth: true,
-            roles: ['admin']
-          }
+          component: () => import('../views/admin/AppManagement.vue')
         },
         {
           path: 'admin/systems',
           name: 'admin-systems',
-          component: () => import('../views/admin/SystemManagement.vue'),
-          meta: {
-            title: '系統管理',
-            requiresAuth: true,
-            roles: ['admin']
-          }
+          component: () => import('../views/admin/SystemManagement.vue')
         }
       ]
     }
