@@ -1,6 +1,6 @@
 <template>
-  <div class="app-management">
-    <n-card title="應用管理" class="management-card">
+  <div class="system-management">
+    <n-card title="系統管理" class="management-card">
       <!-- 頂部操作欄 -->
       <div class="action-bar">
         <n-space>
@@ -8,10 +8,10 @@
             <template #icon>
               <n-icon><Add /></n-icon>
             </template>
-            新增應用
+            新增系統
           </n-button>
           <n-input-group>
-            <n-input v-model:value="searchQuery" placeholder="搜尋應用程式..." />
+            <n-input v-model:value="searchQuery" placeholder="搜尋系統..." />
             <n-button type="primary" ghost>
               <template #icon>
                 <n-icon><Search /></n-icon>
@@ -21,7 +21,7 @@
         </n-space>
       </div>
 
-      <!-- 應用程式列表 -->
+      <!-- 系統列表 -->
       <n-data-table
         :columns="columns"
         :data="tableData"
@@ -31,10 +31,10 @@
       />
     </n-card>
 
-    <!-- 新增/編輯應用程式對話框 -->
+    <!-- 新增/編輯系統對話框 -->
     <n-modal
       v-model:show="showAddModal"
-      :title="isEdit ? '編輯應用程式' : '新增應用程式'"
+      :title="isEdit ? '編輯系統' : '新增系統'"
       preset="card"
       style="width: 600px"
     >
@@ -46,42 +46,33 @@
         label-width="100"
         require-mark-placement="right-hanging"
       >
-        <n-form-item label="應用名稱" path="name">
-          <n-input v-model:value="formValue.name" placeholder="請輸入應用名稱" />
+        <n-form-item label="系統名稱" path="name">
+          <n-input v-model:value="formValue.name" placeholder="請輸入系統名稱" />
         </n-form-item>
-        <n-form-item label="應用角色" path="type">
+        <n-form-item label="系統角色" path="type">
           <n-select
             v-model:value="formValue.type"
-            :options="appTypeOptions"
-            placeholder="請選擇應用角色"
+            :options="systemTypeOptions"
+            placeholder="請選擇系統角色"
           />
         </n-form-item>
-        <n-form-item label="應用圖標" path="icon">
-          <n-grid :cols="10" :x-gap="8" :y-gap="8">
-            <n-grid-item v-for="option in iconOptions" :key="option.value">
-              <div
-                class="icon-item"
-                :class="{ active: formValue.iconName === option.value }"
-                @click="selectIcon(option)"
-              >
-                <n-icon size="24">
-                  <component :is="option.icon" />
-                </n-icon>
-              </div>
-            </n-grid-item>
-          </n-grid>
+        <n-form-item label="系統圖示" path="icon">
+          <n-input v-model:value="formValue.icon" placeholder="請輸入圖片URL" />
+          <div v-if="formValue.icon" class="icon-preview">
+            <img :src="formValue.icon" alt="系統圖示" />
+          </div>
         </n-form-item>
-        <n-form-item label="應用描述" path="description">
+        <n-form-item label="系統描述" path="description">
           <n-input
             v-model:value="formValue.description"
             type="textarea"
-            placeholder="請輸入應用描述"
+            placeholder="請輸入系統描述"
           />
         </n-form-item>
-        <n-form-item label="應用URL" path="url">
-          <n-input v-model:value="formValue.url" placeholder="請輸入應用URL" />
+        <n-form-item label="系統URL" path="url">
+          <n-input v-model:value="formValue.url" placeholder="請輸入系統URL" />
         </n-form-item>
-        <n-form-item label="應用狀態" path="status">
+        <n-form-item label="系統狀態" path="status">
           <n-switch v-model:value="formValue.status" />
         </n-form-item>
         <n-form-item label="排序" path="sort">
@@ -111,37 +102,14 @@ import {
   NForm,
   NFormItem,
   NSelect,
-  NUpload,
   NSwitch,
   NInputNumber,
   NIcon,
-  NGrid,
-  NGridItem,
   useMessage
 } from 'naive-ui'
 import {
   Add,
   Search,
-  TimeOutline,
-  PersonOutline,
-  CarOutline,
-  DocumentTextOutline,
-  RocketOutline,
-  GiftOutline,
-  CalendarOutline,
-  ClipboardOutline,
-  PhonePortraitOutline,
-  MailOutline,
-  ChatbubbleOutline,
-  CloudOutline,
-  SettingsOutline,
-  AppsOutline,
-  HomeOutline,
-  BookmarkOutline,
-  StarOutline,
-  ShareOutline,
-  LinkOutline,
-  ImageOutline
 } from '@vicons/ionicons5'
 
 const message = useMessage()
@@ -150,32 +118,8 @@ const showAddModal = ref(false)
 const isEdit = ref(false)
 const searchQuery = ref('')
 
-// 預設圖標列表
-const iconOptions = [
-  { value: 'TimeOutline', icon: TimeOutline },
-  { value: 'PersonOutline', icon: PersonOutline },
-  { value: 'CarOutline', icon: CarOutline },
-  { value: 'DocumentTextOutline', icon: DocumentTextOutline },
-  { value: 'RocketOutline', icon: RocketOutline },
-  { value: 'GiftOutline', icon: GiftOutline },
-  { value: 'CalendarOutline', icon: CalendarOutline },
-  { value: 'ClipboardOutline', icon: ClipboardOutline },
-  { value: 'PhonePortraitOutline', icon: PhonePortraitOutline },
-  { value: 'MailOutline', icon: MailOutline },
-  { value: 'ChatbubbleOutline', icon: ChatbubbleOutline },
-  { value: 'CloudOutline', icon: CloudOutline },
-  { value: 'SettingsOutline', icon: SettingsOutline },
-  { value: 'AppsOutline', icon: AppsOutline },
-  { value: 'HomeOutline', icon: HomeOutline },
-  { value: 'BookmarkOutline', icon: BookmarkOutline },
-  { value: 'StarOutline', icon: StarOutline },
-  { value: 'ShareOutline', icon: ShareOutline },
-  { value: 'LinkOutline', icon: LinkOutline },
-  { value: 'ImageOutline', icon: ImageOutline }
-]
-
-// 應用角色選項
-const appTypeOptions = [
+// 系統角色選項
+const systemTypeOptions = [
   { label: '一般使用者', value: 'user' },
   { label: '管理員', value: 'admin' },
   { label: '系統管理員', value: 'system_admin' },
@@ -188,7 +132,6 @@ const formValue = ref({
   name: '',
   type: null,
   icon: '',
-  iconName: '',
   description: '',
   url: '',
   status: true,
@@ -199,22 +142,22 @@ const formValue = ref({
 const rules = {
   name: {
     required: true,
-    message: '請輸入應用名稱',
+    message: '請輸入系統名稱',
     trigger: 'blur'
   },
   type: {
     required: true,
-    message: '請選擇應用角色',
+    message: '請選擇系統角色',
     trigger: 'change'
   },
   description: {
     required: true,
-    message: '請輸入應用描述',
+    message: '請輸入系統描述',
     trigger: 'blur'
   },
   url: {
     required: true,
-    message: '請輸入應用URL',
+    message: '請輸入系統URL',
     trigger: 'blur'
   }
 }
@@ -222,11 +165,11 @@ const rules = {
 // 表格列定義
 const columns = [
   {
-    title: '應用名稱',
+    title: '系統名稱',
     key: 'name'
   },
   {
-    title: '應用角色',
+    title: '系統角色',
     key: 'type',
     render(row) {
       const roleMap = {
@@ -302,7 +245,7 @@ const columns = [
 const tableData = ref([
   {
     id: 1,
-    name: '考勤打卡',
+    name: 'TIPTOP系統',
     type: 'user',
     status: true,
     sort: 1,
@@ -310,7 +253,7 @@ const tableData = ref([
   },
   {
     id: 2,
-    name: '自己人',
+    name: 'MAIL系統',
     type: 'user',
     status: true,
     sort: 2,
@@ -318,7 +261,7 @@ const tableData = ref([
   },
   {
     id: 3,
-    name: '出發GO',
+    name: 'EFGP系統',
     type: 'user',
     status: true,
     sort: 3,
@@ -326,34 +269,26 @@ const tableData = ref([
   },
   {
     id: 4,
-    name: '學苑報',
-    type: 'user',
+    name: 'BI系統',
+    type: 'admin',
     status: true,
     sort: 4,
     url: 'http://10.20.99.71:8080/BOE/BI'
   },
   {
     id: 5,
-    name: '行銷自動化系統',
-    type: 'user',
+    name: 'ACP系統',
+    type: 'admin',
     status: true,
     sort: 5,
     url: 'https://acpms.digiwin.com/'
   },
   {
     id: 6,
-    name: '創業創新',
-    type: 'user',
+    name: '顧問CRM系統',
+    type: 'admin',
     status: true,
     sort: 6,
-    url: 'http://crmservice.dsc.com.tw/DSC.NET/Project/VENTURA/src/_Common/PlatFormUtil/OtherPage/DSCPage/FrameSet/DefaultStyle/Login.aspx'
-  },
-  {
-    id: 7,
-    name: '活動簽到',
-    type: 'user',
-    status: true,
-    sort: 7,
     url: 'http://crmservice.dsc.com.tw/DSC.NET/Project/VENTURA/src/_Common/PlatFormUtil/OtherPage/DSCPage/FrameSet/DefaultStyle/Login.aspx'
   }
 ])
@@ -363,20 +298,12 @@ const pagination = {
   pageSize: 10
 }
 
-// 處理圖標上傳
-const handleIconChange = ({ file }) => {
-  if (file) {
-    // 這裡可以添加上傳邏輯
-    message.success('圖標上傳成功')
-  }
-}
-
 // 處理編輯
 const handleEdit = row => {
   isEdit.value = true
   formValue.value = {
     ...row,
-    iconName: row.icon
+    icon: row.icon
   }
   showAddModal.value = true
 }
@@ -394,19 +321,13 @@ const handleSubmit = () => {
       // 這裡可以添加保存邏輯
       const data = {
         ...formValue.value,
-        icon: formValue.value.iconName
+        icon: formValue.value.icon
       }
       console.log('提交的數據：', data)
       message.success(isEdit.value ? '更新成功' : '新增成功')
       showAddModal.value = false
     }
   })
-}
-
-// 添加選擇圖標的方法
-const selectIcon = option => {
-  formValue.value.iconName = option.value
-  formValue.value.icon = option.value
 }
 </script>
 
@@ -419,6 +340,16 @@ const selectIcon = option => {
   margin-bottom: 24px;
 }
 
+.icon-preview {
+  margin-top: 8px;
+}
+
+.icon-preview img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
 :deep(.n-data-table) {
   .n-data-table-td {
     padding: 16px;
@@ -426,33 +357,12 @@ const selectIcon = option => {
 }
 
 @media (max-width: 768px) {
-  .app-management {
+  .system-management {
     padding: 16px;
   }
 
   .action-bar {
     margin-bottom: 16px;
-  }
-}
-
-.icon-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    background-color: #f5f5f5;
-  }
-
-  &.active {
-    border-color: #18a058;
-    background-color: #f0f9eb;
   }
 }
 </style>

@@ -39,7 +39,8 @@ import {
   ShieldCheckmark,
   DocumentText,
   Key,
-  AppsOutline
+  AppsOutline,
+  Settings
 } from '@vicons/ionicons5'
 
 const router = useRouter()
@@ -94,6 +95,12 @@ const menuOptions = [
         key: '/admin/apps',
         path: '/admin/apps',
         icon: renderIcon(AppsOutline)
+      },
+      {
+        label: '系統管理',
+        key: '/admin/systems',
+        path: '/admin/systems',
+        icon: renderIcon(Settings)
       }
     ]
   }

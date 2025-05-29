@@ -48,6 +48,16 @@ const router = createRouter({
             requiresAuth: true,
             roles: ['admin']
           }
+        },
+        {
+          path: 'admin/systems',
+          name: 'admin-systems',
+          component: () => import('../views/admin/SystemManagement.vue'),
+          meta: {
+            title: '系統管理',
+            requiresAuth: true,
+            roles: ['admin']
+          }
         }
       ]
     }
