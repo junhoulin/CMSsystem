@@ -32,7 +32,15 @@ import { ref, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { NLayoutSider, NMenu, NIcon } from 'naive-ui'
 import { useLayoutStore } from '../stores/layout'
-import { Home, Newspaper, Apps, ShieldCheckmark, DocumentText, Key } from '@vicons/ionicons5'
+import {
+  Home,
+  Newspaper,
+  Apps,
+  ShieldCheckmark,
+  DocumentText,
+  Key,
+  AppsOutline
+} from '@vicons/ionicons5'
 
 const router = useRouter()
 const route = useRoute()
@@ -80,6 +88,12 @@ const menuOptions = [
         key: '/admin/permissions',
         path: '/admin/permissions',
         icon: renderIcon(Key)
+      },
+      {
+        label: '應用程式管理',
+        key: '/admin/apps',
+        path: '/admin/apps',
+        icon: renderIcon(AppsOutline)
       }
     ]
   }

@@ -38,6 +38,16 @@ const router = createRouter({
           path: 'admin/permissions',
           name: 'admin-permissions',
           component: () => import('../views/admin/Permissions.vue')
+        },
+        {
+          path: 'admin/apps',
+          name: 'admin-apps',
+          component: () => import('../views/admin/AppManagement.vue'),
+          meta: {
+            title: '應用程式管理',
+            requiresAuth: true,
+            roles: ['admin']
+          }
         }
       ]
     }
