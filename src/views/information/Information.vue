@@ -4,24 +4,41 @@
       <n-tabs type="line" animated>
         <n-tab-pane name="news" tab="最新消息">
           <div class="article-list">
-            <div
-              class="article-item"
-              v-for="(item, index) in newsList"
-              :key="index"
-              @click="goToArticleDetail('news', index)"
-            >
-              <div class="article-image">
-                <img :src="item.image" :alt="item.title" />
-              </div>
-              <div class="article-content">
-                <h3>{{ item.title }}</h3>
-                <p>{{ item.content }}</p>
-                <div class="article-meta">
-                  <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
-                  <span class="article-time">{{ item.time }}</span>
+            <template v-if="loading">
+              <div class="article-item" v-for="i in 12" :key="i">
+                <div class="article-image">
+                  <n-skeleton height="120px" />
+                </div>
+                <div class="article-content">
+                  <n-skeleton text />
+                  <n-skeleton text :repeat="2" />
+                  <div class="article-meta">
+                    <n-skeleton text />
+                    <n-skeleton text />
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
+            <template v-else>
+              <div
+                class="article-item"
+                v-for="(item, index) in newsList"
+                :key="index"
+                @click="goToArticleDetail('news', index)"
+              >
+                <div class="article-image">
+                  <img :src="item.image" :alt="item.title" />
+                </div>
+                <div class="article-content">
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.content }}</p>
+                  <div class="article-meta">
+                    <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
+                    <span class="article-time">{{ item.time }}</span>
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
           <div class="pagination">
             <n-pagination
@@ -35,24 +52,41 @@
 
         <n-tab-pane name="digital-world" tab="數智天地">
           <div class="article-list">
-            <div
-              class="article-item"
-              v-for="(item, index) in digitalWorldList"
-              :key="index"
-              @click="goToArticleDetail('digital-world', index)"
-            >
-              <div class="article-image">
-                <img :src="item.image" :alt="item.title" />
-              </div>
-              <div class="article-content">
-                <h3>{{ item.title }}</h3>
-                <p>{{ item.content }}</p>
-                <div class="article-meta">
-                  <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
-                  <span class="article-time">{{ item.time }}</span>
+            <template v-if="loading">
+              <div class="article-item" v-for="i in 12" :key="i">
+                <div class="article-image">
+                  <n-skeleton height="120px" />
+                </div>
+                <div class="article-content">
+                  <n-skeleton text />
+                  <n-skeleton text :repeat="2" />
+                  <div class="article-meta">
+                    <n-skeleton text />
+                    <n-skeleton text />
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
+            <template v-else>
+              <div
+                class="article-item"
+                v-for="(item, index) in digitalWorldList"
+                :key="index"
+                @click="goToArticleDetail('digital-world', index)"
+              >
+                <div class="article-image">
+                  <img :src="item.image" :alt="item.title" />
+                </div>
+                <div class="article-content">
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.content }}</p>
+                  <div class="article-meta">
+                    <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
+                    <span class="article-time">{{ item.time }}</span>
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
           <div class="pagination">
             <n-pagination
@@ -66,24 +100,41 @@
 
         <n-tab-pane name="digital-articles" tab="數智文章">
           <div class="article-list">
-            <div
-              class="article-item"
-              v-for="(item, index) in digitalArticlesList"
-              :key="index"
-              @click="goToArticleDetail('digital-articles', index)"
-            >
-              <div class="article-image">
-                <img :src="item.image" :alt="item.title" />
-              </div>
-              <div class="article-content">
-                <h3>{{ item.title }}</h3>
-                <p>{{ item.content }}</p>
-                <div class="article-meta">
-                  <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
-                  <span class="article-time">{{ item.time }}</span>
+            <template v-if="loading">
+              <div class="article-item" v-for="i in 12" :key="i">
+                <div class="article-image">
+                  <n-skeleton height="120px" />
+                </div>
+                <div class="article-content">
+                  <n-skeleton text />
+                  <n-skeleton text :repeat="2" />
+                  <div class="article-meta">
+                    <n-skeleton text  />
+                    <n-skeleton text  />
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
+            <template v-else>
+              <div
+                class="article-item"
+                v-for="(item, index) in digitalArticlesList"
+                :key="index"
+                @click="goToArticleDetail('digital-articles', index)"
+              >
+                <div class="article-image">
+                  <img :src="item.image" :alt="item.title" />
+                </div>
+                <div class="article-content">
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.content }}</p>
+                  <div class="article-meta">
+                    <n-tag :bordered="false" type="success">{{ item.tag }}</n-tag>
+                    <span class="article-time">{{ item.time }}</span>
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
           <div class="pagination">
             <n-pagination
@@ -101,12 +152,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { NTabs, NTabPane, NTag, NPagination } from 'naive-ui'
+import { NTabs, NTabPane, NTag, NPagination, NSkeleton } from 'naive-ui'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
 const contentContainer = ref(null)
+const loading = ref(true)
 
 // 分頁數據
 const page = ref({
@@ -150,6 +202,7 @@ const fetchData = async (type, pageNum) => {
 
 // 處理頁碼變化
 const handlePageChange = async type => {
+  loading.value = true
   const list = {
     news: newsList,
     'digital-world': digitalWorldList,
@@ -158,6 +211,7 @@ const handlePageChange = async type => {
 
   const newItems = await fetchData(type, page.value[type])
   list.value = newItems
+  loading.value = false
 
   // 使用 contentContainer 滾動到頂部
   if (contentContainer.value) {
@@ -170,12 +224,19 @@ const handlePageChange = async type => {
 
 // 跳轉到文章詳情頁
 const goToArticleDetail = (type, index) => {
-  const id = page.value[type] * 12 + index + 1
+  const pageType = {
+    news: 'news',
+    'digital-world': 'digitalWorld',
+    'digital-articles': 'digitalArticles'
+  }[type]
+
+  const id = page.value[pageType] * 12 + index + 1
   router.push(`/Information/article/${id}`)
 }
 
 // 初始化數據
 onMounted(async () => {
+  loading.value = true
   const [news, digitalWorld, digitalArticles] = await Promise.all([
     fetchData('news', 1),
     fetchData('digital-world', 1),
@@ -185,6 +246,7 @@ onMounted(async () => {
   newsList.value = news
   digitalWorldList.value = digitalWorld
   digitalArticlesList.value = digitalArticles
+  loading.value = false
 })
 </script>
 
