@@ -40,7 +40,8 @@ import {
   DocumentText,
   Key,
   AppsOutline,
-  Settings
+  Settings,
+  People
 } from '@vicons/ionicons5'
 
 const router = useRouter()
@@ -89,7 +90,7 @@ const menuOptions = [
         key: '/Information/SecurityManagement',
         path: '/Information/SecurityManagement',
         icon: renderIcon(DocumentText)
-      }
+      },
     ]
   },
   {
@@ -126,6 +127,12 @@ const menuOptions = [
         key: '/admin/systems',
         path: '/admin/systems',
         icon: renderIcon(Settings)
+      },
+      {
+        label: '帳號管理',
+        key: '/admin/accounts',
+        path: '/admin/accounts',
+        icon: renderIcon(People)
       }
     ]
   }
