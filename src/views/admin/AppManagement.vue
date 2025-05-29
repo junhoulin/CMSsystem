@@ -1,6 +1,6 @@
 <template>
   <div class="app-management">
-    <n-card title="應用程式管理" class="management-card">
+    <n-card title="應用管理" class="management-card">
       <!-- 頂部操作欄 -->
       <div class="action-bar">
         <n-space>
@@ -49,17 +49,27 @@
         <n-form-item label="應用名稱" path="name">
           <n-input v-model:value="formValue.name" placeholder="請輸入應用名稱" />
         </n-form-item>
-        <n-form-item label="應用類型" path="type">
+        <n-form-item label="應用角色" path="type">
           <n-select
             v-model:value="formValue.type"
             :options="appTypeOptions"
-            placeholder="請選擇應用類型"
+            placeholder="請選擇應用角色"
           />
         </n-form-item>
         <n-form-item label="應用圖標" path="icon">
-          <n-upload accept="image/*" :show-file-list="false" @change="handleIconChange">
-            <n-button>上傳圖標</n-button>
-          </n-upload>
+          <n-grid :cols="10" :x-gap="8" :y-gap="8">
+            <n-grid-item v-for="option in iconOptions" :key="option.value">
+              <div
+                class="icon-item"
+                :class="{ active: formValue.iconName === option.value }"
+                @click="selectIcon(option)"
+              >
+                <n-icon size="24">
+                  <component :is="option.icon" />
+                </n-icon>
+              </div>
+            </n-grid-item>
+          </n-grid>
         </n-form-item>
         <n-form-item label="應用描述" path="description">
           <n-input
@@ -67,6 +77,9 @@
             type="textarea"
             placeholder="請輸入應用描述"
           />
+        </n-form-item>
+        <n-form-item label="應用URL" path="url">
+          <n-input v-model:value="formValue.url" placeholder="請輸入應用URL" />
         </n-form-item>
         <n-form-item label="應用狀態" path="status">
           <n-switch v-model:value="formValue.status" />
@@ -102,9 +115,34 @@ import {
   NSwitch,
   NInputNumber,
   NIcon,
+  NGrid,
+  NGridItem,
   useMessage
 } from 'naive-ui'
-import { Add, Search, Pencil, TrashBin } from '@vicons/ionicons5'
+import {
+  Add,
+  Search,
+  TimeOutline,
+  PersonOutline,
+  CarOutline,
+  DocumentTextOutline,
+  RocketOutline,
+  GiftOutline,
+  CalendarOutline,
+  ClipboardOutline,
+  PhonePortraitOutline,
+  MailOutline,
+  ChatbubbleOutline,
+  CloudOutline,
+  SettingsOutline,
+  AppsOutline,
+  HomeOutline,
+  BookmarkOutline,
+  StarOutline,
+  ShareOutline,
+  LinkOutline,
+  ImageOutline
+} from '@vicons/ionicons5'
 
 const message = useMessage()
 const formRef = ref(null)
@@ -112,21 +150,50 @@ const showAddModal = ref(false)
 const isEdit = ref(false)
 const searchQuery = ref('')
 
+// 預設圖標列表
+const iconOptions = [
+  { value: 'TimeOutline', icon: TimeOutline },
+  { value: 'PersonOutline', icon: PersonOutline },
+  { value: 'CarOutline', icon: CarOutline },
+  { value: 'DocumentTextOutline', icon: DocumentTextOutline },
+  { value: 'RocketOutline', icon: RocketOutline },
+  { value: 'GiftOutline', icon: GiftOutline },
+  { value: 'CalendarOutline', icon: CalendarOutline },
+  { value: 'ClipboardOutline', icon: ClipboardOutline },
+  { value: 'PhonePortraitOutline', icon: PhonePortraitOutline },
+  { value: 'MailOutline', icon: MailOutline },
+  { value: 'ChatbubbleOutline', icon: ChatbubbleOutline },
+  { value: 'CloudOutline', icon: CloudOutline },
+  { value: 'SettingsOutline', icon: SettingsOutline },
+  { value: 'AppsOutline', icon: AppsOutline },
+  { value: 'HomeOutline', icon: HomeOutline },
+  { value: 'BookmarkOutline', icon: BookmarkOutline },
+  { value: 'StarOutline', icon: StarOutline },
+  { value: 'ShareOutline', icon: ShareOutline },
+  { value: 'LinkOutline', icon: LinkOutline },
+  { value: 'ImageOutline', icon: ImageOutline }
+]
+
+// 應用角色選項
+const appTypeOptions = [
+  { label: '一般使用者', value: 'user' },
+  { label: '管理員', value: 'admin' },
+  { label: '系統管理員', value: 'system_admin' },
+  { label: '訪客', value: 'guest' },
+  { label: '開發者', value: 'developer' }
+]
+
 // 表單數據
 const formValue = ref({
   name: '',
   type: null,
   icon: '',
+  iconName: '',
   description: '',
+  url: '',
   status: true,
   sort: 0
 })
-
-// 應用類型選項
-const appTypeOptions = [
-  { label: '系統應用', value: 'system' },
-  { label: '自定義應用', value: 'custom' }
-]
 
 // 表單驗證規則
 const rules = {
@@ -137,12 +204,17 @@ const rules = {
   },
   type: {
     required: true,
-    message: '請選擇應用類型',
+    message: '請選擇應用角色',
     trigger: 'change'
   },
   description: {
     required: true,
     message: '請輸入應用描述',
+    trigger: 'blur'
+  },
+  url: {
+    required: true,
+    message: '請輸入應用URL',
     trigger: 'blur'
   }
 }
@@ -154,10 +226,17 @@ const columns = [
     key: 'name'
   },
   {
-    title: '應用類型',
+    title: '應用角色',
     key: 'type',
     render(row) {
-      return h('span', {}, row.type === 'system' ? '系統應用' : '自定義應用')
+      const roleMap = {
+        user: '一般使用者',
+        admin: '管理員',
+        system_admin: '系統管理員',
+        guest: '訪客',
+        developer: '開發者'
+      }
+      return h('span', {}, roleMap[row.type] || row.type)
     }
   },
   {
@@ -178,6 +257,13 @@ const columns = [
   {
     title: '排序',
     key: 'sort'
+  },
+  {
+    title: 'URL',
+    key: 'url',
+    ellipsis: {
+      tooltip: true
+    }
   },
   {
     title: '操作',
@@ -216,17 +302,107 @@ const columns = [
 const tableData = ref([
   {
     id: 1,
-    name: '數智入口',
-    type: 'system',
+    name: 'TIPTOP系統',
+    type: 'user',
     status: true,
-    sort: 1
+    sort: 1,
+    url: 'http://10.20.99.90/tiptop.html'
   },
   {
     id: 2,
-    name: '數智文章',
-    type: 'system',
+    name: 'MAIL系統',
+    type: 'user',
     status: true,
-    sort: 2
+    sort: 2,
+    url: 'https://dwm6.digiwin.com/coremail/index.jsp'
+  },
+  {
+    id: 3,
+    name: 'EFGP系統',
+    type: 'user',
+    status: true,
+    sort: 3,
+    url: 'https://efgptw.digiwin.com/NaNaWeb/GP//ForwardIndex?hdnMethod=findIndexForward'
+  },
+  {
+    id: 4,
+    name: 'BI系統',
+    type: 'admin',
+    status: true,
+    sort: 4,
+    url: 'http://10.20.99.71:8080/BOE/BI'
+  },
+  {
+    id: 5,
+    name: 'ACP系統',
+    type: 'admin',
+    status: true,
+    sort: 5,
+    url: 'https://acpms.digiwin.com/'
+  },
+  {
+    id: 6,
+    name: '顧問CRM系統',
+    type: 'admin',
+    status: true,
+    sort: 6,
+    url: 'http://crmservice.dsc.com.tw/DSC.NET/Project/VENTURA/src/_Common/PlatFormUtil/OtherPage/DSCPage/FrameSet/DefaultStyle/Login.aspx'
+  },
+  {
+    id: 7,
+    name: '考勤打卡',
+    type: 'user',
+    status: true,
+    sort: 7,
+    url: 'http://10.20.99.90/tiptop.html'
+  },
+  {
+    id: 8,
+    name: '自己人',
+    type: 'user',
+    status: true,
+    sort: 8,
+    url: 'https://dwm6.digiwin.com/coremail/index.jsp'
+  },
+  {
+    id: 9,
+    name: '出發GO',
+    type: 'user',
+    status: true,
+    sort: 9,
+    url: 'https://efgptw.digiwin.com/NaNaWeb/GP//ForwardIndex?hdnMethod=findIndexForward'
+  },
+  {
+    id: 10,
+    name: '學苑報',
+    type: 'user',
+    status: true,
+    sort: 10,
+    url: 'http://10.20.99.71:8080/BOE/BI'
+  },
+  {
+    id: 11,
+    name: '行銷自動化系統',
+    type: 'admin',
+    status: true,
+    sort: 11,
+    url: 'https://acpms.digiwin.com/'
+  },
+  {
+    id: 12,
+    name: '創業創新',
+    type: 'admin',
+    status: true,
+    sort: 12,
+    url: 'http://crmservice.dsc.com.tw/DSC.NET/Project/VENTURA/src/_Common/PlatFormUtil/OtherPage/DSCPage/FrameSet/DefaultStyle/Login.aspx'
+  },
+  {
+    id: 13,
+    name: '活動簽到',
+    type: 'user',
+    status: true,
+    sort: 13,
+    url: 'http://crmservice.dsc.com.tw/DSC.NET/Project/VENTURA/src/_Common/PlatFormUtil/OtherPage/DSCPage/FrameSet/DefaultStyle/Login.aspx'
   }
 ])
 
@@ -246,7 +422,10 @@ const handleIconChange = ({ file }) => {
 // 處理編輯
 const handleEdit = row => {
   isEdit.value = true
-  formValue.value = { ...row }
+  formValue.value = {
+    ...row,
+    iconName: row.icon
+  }
   showAddModal.value = true
 }
 
@@ -261,15 +440,25 @@ const handleSubmit = () => {
   formRef.value?.validate(errors => {
     if (!errors) {
       // 這裡可以添加保存邏輯
+      const data = {
+        ...formValue.value,
+        icon: formValue.value.iconName
+      }
+      console.log('提交的數據：', data)
       message.success(isEdit.value ? '更新成功' : '新增成功')
       showAddModal.value = false
     }
   })
 }
+
+// 添加選擇圖標的方法
+const selectIcon = option => {
+  formValue.value.iconName = option.value
+  formValue.value.icon = option.value
+}
 </script>
 
 <style lang="scss" scoped>
-
 .management-card {
   margin-bottom: 24px;
 }
@@ -291,6 +480,27 @@ const handleSubmit = () => {
 
   .action-bar {
     margin-bottom: 16px;
+  }
+}
+
+.icon-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
+  &.active {
+    border-color: #18a058;
+    background-color: #f0f9eb;
   }
 }
 </style>

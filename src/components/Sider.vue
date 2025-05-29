@@ -90,7 +90,7 @@ const menuOptions = [
         icon: renderIcon(Key)
       },
       {
-        label: '應用程式管理',
+        label: '應用管理',
         key: '/admin/apps',
         path: '/admin/apps',
         icon: renderIcon(AppsOutline)
